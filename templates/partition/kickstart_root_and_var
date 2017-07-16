@@ -1,0 +1,29 @@
+<%#
+kind: ptable
+name: Kickstart default
+oses:
+- CentOS
+- Fedora
+- RedHat
+%>
+# https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Installation_Guide/sect-kickstart-syntax.html
+
+
+# 1Gb /boot and all others on LVM
+# / and /var with same weight of growing and max of 16Gb
+
+
+#ignoredisk --drives=sdb,sdc
+ignoredisk --only-use=sda
+
+zerombr
+clearpart --all --initlabel
+#clearpart --drives=hda,hdb --all
+
+
+part /boot --fstype ext4 --size=1024 --asprimary
+part pv.01 --size=20000 --grow --ondisk=sda
+volgroup vg01 pv.01
+logvol / --vgname=vg01  --fstype=ext4  --size=4196 --name=root --grow --maxsize=10000
+logvol /var --vgname=vg01 --fstype=ext4 --size=4196 --name=var --grow --maxsize=20000
+logvol swap --vgname=vg01 --fstype=swap --size=1024 --name=swap
